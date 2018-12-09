@@ -1,4 +1,4 @@
-package com.example.milken.githubsearchapp.data
+package com.example.milken.githubsearchapp.data.models
 
 import com.google.gson.annotations.SerializedName
 

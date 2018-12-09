@@ -1,4 +1,4 @@
-package com.example.milken.githubsearchapp.data
+package com.example.milken.githubsearchapp.data.models
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
