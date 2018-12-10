@@ -5,6 +5,7 @@ import android.util.Log
 import com.example.milken.githubsearchapp.data.apis.GithubSearchApi
 import io.reactivex.Observable
 import io.reactivex.ObservableOnSubscribe
+import io.reactivex.disposables.CompositeDisposable
 import java.util.concurrent.TimeUnit
 
 
@@ -13,6 +14,8 @@ class SearchPresenterImpl(
 ) : SearchContract.Presenter {
 
     private lateinit var view: SearchContract.View
+
+    private val compositeDisposable = CompositeDisposable()
 
     override fun setView(view: SearchContract.View) {
         this.view = view
@@ -24,16 +27,18 @@ class SearchPresenterImpl(
     }
 
     override fun setTextChangeObservable(textObservable: Observable<CharSequence>) {
-        textObservable
+        val disposable = textObservable
             .debounce(250, TimeUnit.MILLISECONDS)
             .distinct()
             .filter { text -> !text.isBlank() }
             .subscribe {
                 Log.d("myTag", "text = $it")
             }
+
+        compositeDisposable.add(disposable)
     }
 
     override fun viewDestroyed() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        compositeDisposable.dispose()
     }
 }
