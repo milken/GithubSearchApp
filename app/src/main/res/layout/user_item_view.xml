@@ -3,7 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:padding="5dp"
+    android:background="@color/md_white_1000">
 
     <TextView
         android:id="@+id/idTextView"
@@ -27,9 +29,11 @@
         android:id="@+id/nameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/typeTextView"
+        app:layout_constraintTop_toTopOf="@id/typeTextView"
+        app:layout_constraintLeft_toRightOf="@id/typeTextView"
         android:padding="5dp"
+        android:textStyle="bold"
+        android:textColor="@color/md_black_1000"
         tools:text="rxJava"/>
 
 </android.support.constraint.ConstraintLayout>

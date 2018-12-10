@@ -1,8 +1,10 @@
 package com.example.milken.githubsearchapp.search
 
+import android.graphics.Rect
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.Toast
 import com.example.milken.githubsearchapp.MyApp
@@ -48,6 +50,11 @@ class SearchActivity : AppCompatActivity(), SearchContract.View {
         recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = SearchAdapter(this)
         recyclerView.adapter = adapter
+        recyclerView.addItemDecoration(
+            MarginItemDecorator(
+                resources.getDimension(R.dimen.item_default_margin).toInt()
+            )
+        )
     }
 
     override fun updateSearchList(items: List<BaseItem>) {
