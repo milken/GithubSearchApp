@@ -1,10 +1,10 @@
-package com.example.milken.githubsearchapp
+package com.example.milken.githubsearchapp.ui
 
 import android.app.Application
 import com.example.milken.githubsearchapp.di.AppComponent
 import com.example.milken.githubsearchapp.di.DaggerAppComponent
 
-class MyApp: Application() {
+class MyApp : Application() {
 
     lateinit var appComponent: AppComponent
 
