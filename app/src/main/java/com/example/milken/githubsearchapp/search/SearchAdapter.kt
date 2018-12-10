@@ -8,6 +8,9 @@ import android.view.ViewGroup
 import com.example.milken.githubsearchapp.R
 import com.example.milken.githubsearchapp.data.models.BaseItem
 import com.example.milken.githubsearchapp.data.models.DataType
+import com.example.milken.githubsearchapp.search.viewholders.BaseViewHolder
+import com.example.milken.githubsearchapp.search.viewholders.RepoViewHolder
+import com.example.milken.githubsearchapp.search.viewholders.UserViewHolder
 import java.lang.RuntimeException
 
 class SearchAdapter(
