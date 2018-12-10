@@ -7,5 +7,8 @@ import javax.inject.Singleton
 @Singleton
 @Component (modules = [NetModule::class])
 interface AppComponent {
+
+    fun getSearchSubComponent(searchModule: SearchModule): SearchComponent
+
     fun inject (app: MyApp)
 }

@@ -7,7 +7,7 @@ import com.example.milken.githubsearchapp.di.NetModule
 
 class MyApp: Application() {
 
-    lateinit var component: AppComponent
+    lateinit var appComponent: AppComponent
 
     override fun onCreate() {
         super.onCreate()
@@ -16,9 +16,6 @@ class MyApp: Application() {
     }
 
     private fun setupComponent() {
-        component = DaggerAppComponent
-            .builder()
-            .netModule(NetModule())
-            .build()
+        appComponent = DaggerAppComponent.create() // no dependencies = create
     }
 }

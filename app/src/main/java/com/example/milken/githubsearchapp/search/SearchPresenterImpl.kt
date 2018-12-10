@@ -1,18 +1,20 @@
 package com.example.milken.githubsearchapp.search
 
+import android.util.Log
 import com.example.milken.githubsearchapp.data.apis.GithubSearchApi
 
 class SearchPresenterImpl(
     val githubSearchApi: GithubSearchApi
 ) : SearchContract.Presenter {
 
+    private lateinit var view: SearchContract.View
 
     override fun setView(view: SearchContract.View) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        this.view = view
     }
 
     override fun viewSetUp() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        Log.d("MyTag","setUp!")
     }
 
     override fun viewDestroyed() {
