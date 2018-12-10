@@ -11,7 +11,8 @@ import com.example.milken.githubsearchapp.data.models.DataType
 import java.lang.RuntimeException
 
 class SearchAdapter(
-    val context: Context
+    private val context: Context,
+    private val listener: (BaseItem) -> Unit
 ) : RecyclerView.Adapter<BaseViewHolder>() {
 
     private var itemList: List<BaseItem> = mutableListOf()
@@ -36,7 +37,7 @@ class SearchAdapter(
     }
 
     override fun onBindViewHolder(viewHolder: BaseViewHolder, position: Int) {
-        viewHolder.configure(itemList[position])
+        viewHolder.configure(itemList[position], listener)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -44,10 +45,6 @@ class SearchAdapter(
         return when (itemList[position].dataType) {
             DataType.REPO -> REPO_ITEM
             DataType.USER -> USER_ITEM
-            else -> {
-                throw RuntimeException("Unknown viewholder type")
-
-            }
         }
     }
 

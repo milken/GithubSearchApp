@@ -5,11 +5,13 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.example.milken.githubsearchapp.MyApp
 import com.example.milken.githubsearchapp.R
 import com.example.milken.githubsearchapp.data.models.BaseItem
+import com.example.milken.githubsearchapp.data.models.User
 import com.example.milken.githubsearchapp.di.SearchModule
 import com.jakewharton.rxbinding2.widget.RxTextView
 import kotlinx.android.synthetic.main.main_activity.*
@@ -48,7 +50,9 @@ class SearchActivity : AppCompatActivity(), SearchContract.View {
 
     override fun initSearchList() {
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = SearchAdapter(this)
+        adapter = SearchAdapter(this) {
+            presenter.userClicked(it)
+        }
         recyclerView.adapter = adapter
         recyclerView.addItemDecoration(
             MarginItemDecorator(
@@ -59,6 +63,10 @@ class SearchActivity : AppCompatActivity(), SearchContract.View {
 
     override fun updateSearchList(items: List<BaseItem>) {
         adapter.setData(items)
+    }
+
+    override fun startDetailsActivity(user: User) {
+        Log.d("myTag", "startDetailsActivity")
     }
 
     override fun showError(message: String) {

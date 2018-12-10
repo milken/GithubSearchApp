@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.milken.githubsearchapp.data.apis.GithubSearchApi
 import com.example.milken.githubsearchapp.data.models.BaseItem
 import com.example.milken.githubsearchapp.data.models.ReposResponse
+import com.example.milken.githubsearchapp.data.models.User
 import com.example.milken.githubsearchapp.data.models.UsersResponse
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -16,7 +17,6 @@ import java.util.concurrent.TimeUnit
 class SearchPresenterImpl(
     val githubSearchApi: GithubSearchApi
 ) : SearchContract.Presenter {
-
     private lateinit var view: SearchContract.View
 
     private var textChangeDisposable: Disposable? = null
@@ -31,6 +31,9 @@ class SearchPresenterImpl(
         view.initTextWatcher()
     }
 
+    override fun userClicked(baseItem: BaseItem) {
+        view.startDetailsActivity(baseItem as User)
+    }
 
     override fun setTextChangeObservable(textObservable: Observable<CharSequence>) {
         textChangeDisposable = textObservable

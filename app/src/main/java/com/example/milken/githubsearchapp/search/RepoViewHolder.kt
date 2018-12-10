@@ -1,6 +1,5 @@
 package com.example.milken.githubsearchapp.search
 
-import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.example.milken.githubsearchapp.data.models.BaseItem
 import com.example.milken.githubsearchapp.data.models.Repo
@@ -8,7 +7,10 @@ import kotlinx.android.synthetic.main.repo_item_view.view.*
 
 class RepoViewHolder(view: View) : BaseViewHolder(view) {
 
-    override fun configure(baseItem: BaseItem) {
+    override fun configure(
+        baseItem: BaseItem,
+        listener: (BaseItem) -> Unit
+    ) {
         val repo = baseItem as Repo
         itemView.idTextView.text = repo.id.toString()
         itemView.nameTextView.text = repo.name

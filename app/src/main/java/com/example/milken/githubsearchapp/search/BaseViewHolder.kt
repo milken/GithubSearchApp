@@ -6,5 +6,8 @@ import com.example.milken.githubsearchapp.data.models.BaseItem
 
 abstract class BaseViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-    abstract fun configure(baseItem: BaseItem)
+    abstract fun configure(
+        baseItem: BaseItem,
+        listener: (BaseItem) -> Unit
+    )
 }

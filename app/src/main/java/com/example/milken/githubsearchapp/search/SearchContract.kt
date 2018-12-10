@@ -1,6 +1,7 @@
 package com.example.milken.githubsearchapp.search
 
 import com.example.milken.githubsearchapp.data.models.BaseItem
+import com.example.milken.githubsearchapp.data.models.User
 import io.reactivex.Observable
 
 interface SearchContract {
@@ -8,6 +9,8 @@ interface SearchContract {
     interface Presenter {
         fun setTextChangeObservable(textObservable: Observable<CharSequence>)
         fun setView(view: View)
+
+        fun userClicked(baseItem: BaseItem)
 
         fun viewSetUp()
         fun viewDestroyed()
@@ -22,5 +25,6 @@ interface SearchContract {
 
         fun showProgressBar()
         fun hideProgressBar()
+        fun startDetailsActivity(user: User)
     }
 }
