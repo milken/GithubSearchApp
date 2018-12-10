@@ -1,9 +1,11 @@
 package com.example.milken.githubsearchapp.search
 
+import io.reactivex.Observable
+
 interface SearchContract {
 
     interface Presenter {
-        fun textChanged(text: String)
+        fun setTextChangeObservable(textObservable: Observable<CharSequence>)
         fun setView(view: View)
 
         fun viewSetUp()
