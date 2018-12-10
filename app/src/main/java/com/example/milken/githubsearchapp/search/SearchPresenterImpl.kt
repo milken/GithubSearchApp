@@ -3,9 +3,12 @@ package com.example.milken.githubsearchapp.search
 import android.text.Editable
 import android.util.Log
 import com.example.milken.githubsearchapp.data.apis.GithubSearchApi
+import com.example.milken.githubsearchapp.data.models.ReposResponse
+import com.example.milken.githubsearchapp.data.models.UsersResponse
 import io.reactivex.Observable
 import io.reactivex.ObservableOnSubscribe
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
 
@@ -41,4 +44,16 @@ class SearchPresenterImpl(
     override fun viewDestroyed() {
         compositeDisposable.dispose()
     }
+
+    private fun getUserListRequest(query: String): Observable<UsersResponse> =
+        githubSearchApi
+            .getUserList(query)
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.io())
+
+    private fun getRepoListRequest(query: String): Observable<ReposResponse> =
+        githubSearchApi
+            .getRepoList(query)
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.io())
 }
