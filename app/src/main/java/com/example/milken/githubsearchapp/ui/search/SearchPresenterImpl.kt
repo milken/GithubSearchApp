@@ -11,6 +11,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
+import retrofit2.HttpException
 import java.util.concurrent.TimeUnit
 
 
@@ -51,6 +52,7 @@ class SearchPresenterImpl(
     }
 
     private fun processTextChange(text: String) {
+        view.showProgressBar()
         requestDisposable?.dispose()
 
         requestDisposable = createRequestObservable(text)
@@ -74,13 +76,27 @@ class SearchPresenterImpl(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { result ->
-                    Log.d("myTag", "first item type = ${result[0].dataType}")
                     view.updateSearchList(result)
+                    view.hideProgressBar()
                 },
-                { err ->
-                    Log.d("myTag", "err = ${err.localizedMessage}")
-                    view.showError(err.localizedMessage)
-                })
+                { err -> processError(err) })
+
+    private fun processError(err: Throwable?) {
+        view.hideProgressBar()
+
+        err?.let {
+            if (err is HttpException) {
+                Log.d("myTag", "err response = ${err.response()}")
+
+                if (err.code() == 403) {
+                    view.showError("You have exceeded requests limit")
+                    return
+                }
+            }
+            Log.d("myTag", "err = ${err.localizedMessage}")
+            view.showError(err.localizedMessage)
+        }
+    }
 
 
     private fun getUserListRequest(query: String): Observable<UsersResponse> =

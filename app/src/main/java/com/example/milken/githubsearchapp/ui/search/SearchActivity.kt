@@ -74,10 +74,14 @@ class SearchActivity : AppCompatActivity(), SearchContract.View {
     }
 
     override fun showProgressBar() {
-        progressBar.visibility = View.VISIBLE
+        runOnUiThread {
+            progressBar.visibility = View.VISIBLE
+        }
     }
 
     override fun hideProgressBar() {
-        progressBar.visibility = View.GONE
+        runOnUiThread {
+            progressBar.visibility = View.GONE
+        }
     }
 }
