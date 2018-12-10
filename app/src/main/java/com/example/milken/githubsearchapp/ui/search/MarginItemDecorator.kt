@@ -1,4 +1,4 @@
-package com.example.milken.githubsearchapp.search
+package com.example.milken.githubsearchapp.ui.search
 
 import android.graphics.Rect
 import android.support.v7.widget.RecyclerView

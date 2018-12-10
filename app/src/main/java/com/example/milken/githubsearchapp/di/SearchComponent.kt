@@ -1,6 +1,6 @@
 package com.example.milken.githubsearchapp.di
 
-import com.example.milken.githubsearchapp.search.SearchActivity
+import com.example.milken.githubsearchapp.ui.search.SearchActivity
 import dagger.Subcomponent
 
 @ActivityScope

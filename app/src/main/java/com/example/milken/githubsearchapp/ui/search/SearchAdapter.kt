@@ -1,4 +1,4 @@
-package com.example.milken.githubsearchapp.search
+package com.example.milken.githubsearchapp.ui.search
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
@@ -8,9 +8,9 @@ import android.view.ViewGroup
 import com.example.milken.githubsearchapp.R
 import com.example.milken.githubsearchapp.data.models.BaseItem
 import com.example.milken.githubsearchapp.data.models.DataType
-import com.example.milken.githubsearchapp.search.viewholders.BaseViewHolder
-import com.example.milken.githubsearchapp.search.viewholders.RepoViewHolder
-import com.example.milken.githubsearchapp.search.viewholders.UserViewHolder
+import com.example.milken.githubsearchapp.ui.search.viewholders.BaseViewHolder
+import com.example.milken.githubsearchapp.ui.search.viewholders.RepoViewHolder
+import com.example.milken.githubsearchapp.ui.search.viewholders.UserViewHolder
 import java.lang.RuntimeException
 
 class SearchAdapter(

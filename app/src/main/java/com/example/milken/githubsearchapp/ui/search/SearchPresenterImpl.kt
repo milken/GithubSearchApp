@@ -1,4 +1,4 @@
-package com.example.milken.githubsearchapp.search
+package com.example.milken.githubsearchapp.ui.search
 
 import android.util.Log
 import com.example.milken.githubsearchapp.data.apis.GithubSearchApi

@@ -1,4 +1,4 @@
-package com.example.milken.githubsearchapp.search
+package com.example.milken.githubsearchapp.ui.search
 
 import com.example.milken.githubsearchapp.data.models.BaseItem
 import com.example.milken.githubsearchapp.data.models.User
