@@ -71,8 +71,14 @@ class SearchPresenterImpl(
             .toList()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { result -> Log.d("myTag", "result size = ${result.size}") },
-                { err -> view.showError(err.localizedMessage) })
+                { result ->
+                    Log.d("myTag", "first item type = ${result[0].dataType}")
+                    view.updateSearchList(result)
+                },
+                { err ->
+                    Log.d("myTag", "err = ${err.localizedMessage}")
+                    view.showError(err.localizedMessage)
+                })
 
 
     private fun getUserListRequest(query: String): Observable<UsersResponse> =

@@ -1,5 +1,6 @@
 package com.example.milken.githubsearchapp.search
 
+import com.example.milken.githubsearchapp.data.models.BaseItem
 import io.reactivex.Observable
 
 interface SearchContract {
@@ -16,7 +17,7 @@ interface SearchContract {
         fun initSearchList()
         fun initTextWatcher()
 
-        fun updateSearchList()
+        fun updateSearchList(items: List<BaseItem>)
         fun showError(message: String)
 
         fun showProgressBar()

@@ -2,10 +2,12 @@ package com.example.milken.githubsearchapp.search
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.widget.Toast
 import com.example.milken.githubsearchapp.MyApp
 import com.example.milken.githubsearchapp.R
+import com.example.milken.githubsearchapp.data.models.BaseItem
 import com.example.milken.githubsearchapp.di.SearchModule
 import com.jakewharton.rxbinding2.widget.RxTextView
 import kotlinx.android.synthetic.main.main_activity.*
@@ -15,6 +17,8 @@ class SearchActivity : AppCompatActivity(), SearchContract.View {
 
     @Inject
     lateinit var presenter: SearchContract.Presenter
+
+    private lateinit var adapter: SearchAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,12 +43,15 @@ class SearchActivity : AppCompatActivity(), SearchContract.View {
         presenter.setTextChangeObservable(textObservable)
     }
 
-    override fun initSearchList() {
 
+    override fun initSearchList() {
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        adapter = SearchAdapter(this)
+        recyclerView.adapter = adapter
     }
 
-    override fun updateSearchList() {
-
+    override fun updateSearchList(items: List<BaseItem>) {
+        adapter.setData(items)
     }
 
     override fun showError(message: String) {
