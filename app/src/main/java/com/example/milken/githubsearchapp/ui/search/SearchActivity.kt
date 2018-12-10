@@ -1,5 +1,6 @@
 package com.example.milken.githubsearchapp.ui.search
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -11,6 +12,7 @@ import com.example.milken.githubsearchapp.R
 import com.example.milken.githubsearchapp.data.models.BaseItem
 import com.example.milken.githubsearchapp.data.models.User
 import com.example.milken.githubsearchapp.di.SearchModule
+import com.example.milken.githubsearchapp.ui.details.DetailsActivity
 import com.jakewharton.rxbinding2.widget.RxTextView
 import kotlinx.android.synthetic.main.main_activity.*
 import javax.inject.Inject
@@ -64,7 +66,7 @@ class SearchActivity : AppCompatActivity(), SearchContract.View {
     }
 
     override fun startDetailsActivity(user: User) {
-        Log.d("myTag", "startDetailsActivity")
+        startActivity(DetailsActivity.newIntent(this, user))
     }
 
     override fun showError(message: String) {
