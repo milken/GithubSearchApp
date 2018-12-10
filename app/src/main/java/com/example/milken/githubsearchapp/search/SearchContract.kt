@@ -11,8 +11,11 @@ interface SearchContract {
     }
 
     interface View {
-        fun showSearchList()
-        fun showError()
+        fun initSearchList()
+        fun initTextWatcher()
+
+        fun updateSearchList()
+        fun showError(message: String)
 
         fun showProgressBar()
         fun hideProgressBar()
