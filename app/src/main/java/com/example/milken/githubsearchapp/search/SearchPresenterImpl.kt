@@ -1,15 +1,12 @@
 package com.example.milken.githubsearchapp.search
 
-import android.text.Editable
 import android.util.Log
 import com.example.milken.githubsearchapp.data.apis.GithubSearchApi
 import com.example.milken.githubsearchapp.data.models.BaseItem
 import com.example.milken.githubsearchapp.data.models.ReposResponse
 import com.example.milken.githubsearchapp.data.models.UsersResponse
 import io.reactivex.Observable
-import io.reactivex.ObservableOnSubscribe
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
@@ -75,17 +72,7 @@ class SearchPresenterImpl(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { result -> Log.d("myTag", "result size = ${result.size}") },
-                { err ->
-                    if (err is HttpException) {
-                        Log.d("myTag", "exception ${err.code()}")
-                    } else {
-                        Log.d(
-                            "myTag",
-                            "error thread id = ${Thread.currentThread().id}, message = ${err.message}, " +
-                                    "more = ${err.cause.toString()}, ${err.localizedMessage}"
-                        )
-                    }
-                })
+                { err -> view.showError(err.localizedMessage) })
 
 
     private fun getUserListRequest(query: String): Observable<UsersResponse> =
