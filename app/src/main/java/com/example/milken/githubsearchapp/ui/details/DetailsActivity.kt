@@ -7,10 +7,16 @@ import android.os.Bundle
 import android.widget.Toast
 import com.example.milken.githubsearchapp.R
 import com.example.milken.githubsearchapp.data.models.User
+import com.example.milken.githubsearchapp.di.DetailsModule
+import com.example.milken.githubsearchapp.di.SearchModule
+import com.example.milken.githubsearchapp.ui.MyApp
+import javax.inject.Inject
 
-class DetailsActivity : AppCompatActivity() {
+class DetailsActivity : AppCompatActivity(), DetailsContract.View {
 
-    private lateinit var user: User
+    @Inject
+    private lateinit var presenter: DetailsContract.Presenter
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,15 +27,38 @@ class DetailsActivity : AppCompatActivity() {
             return
         }
 
-        user = intent.getParcelableExtra(INTENT_USER_KEY)
+        initDagger()
+
+        presenter.setView(this)
+
+        val user = intent.getParcelableExtra<User>(INTENT_USER_KEY)
+        presenter.setUser(user)
+    }
+
+    private fun initDagger() {
+        (application as MyApp)
+            .appComponent
+            .getDetailsSubComponent(DetailsModule())
+            .inject(this)
     }
 
     private fun dataInvalid(): Boolean = !intent.hasExtra(INTENT_USER_KEY)
 
-
     private fun finishWithError() {
         Toast.makeText(this, "No data passed", Toast.LENGTH_LONG).show()
         finish()
+    }
+
+    override fun configLoginText(login: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun configProfileImage(avatarUrl: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun configFollowersCountText(followersCount: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     companion object {
