@@ -3,6 +3,7 @@ package com.example.milken.githubsearchapp.search
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
+import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
@@ -36,6 +37,11 @@ class SearchActivity : AppCompatActivity(), SearchContract.View {
     }
 
     override fun initTextWatcher() {
+        searchEditText.addTextChangedListener(object: TextWatcherFacade {
+            override fun afterTextChanged(s: Editable?) {
+                presenter.textChanged(s.toString())
+            }
+        })
     }
 
     override fun initSearchList() {
