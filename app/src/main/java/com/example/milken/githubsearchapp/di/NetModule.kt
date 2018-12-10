@@ -1,5 +1,7 @@
 package com.example.milken.githubsearchapp.di
 
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import okhttp3.logging.HttpLoggingInterceptor
 import dagger.Provides
@@ -8,6 +10,7 @@ import okhttp3.OkHttpClient
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
 
@@ -16,13 +19,19 @@ class NetModule {
 
     @Provides
     @Singleton
-    fun getRetrofit(okHttpClient: OkHttpClient): Retrofit {
+    fun getRetrofit(okHttpClient: OkHttpClient, moshi: Moshi): Retrofit {
         return Retrofit.Builder()
             .baseUrl("https://api.github.com/")
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(MoshiConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .client(okHttpClient)
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun getsMoshi(): Moshi {
+        return Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
     }
 
     @Provides
