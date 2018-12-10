@@ -14,14 +14,15 @@ class SearchPresenterImpl(
     }
 
     override fun viewSetUp() {
-        Log.d("MyTag","setUp!")
-    }
-
-    override fun viewDestroyed() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        view.initSearchList()
+        view.initTextWatcher()
     }
 
     override fun textChanged(text: String) {
+        Log.d("myTag", "text = $text")
+    }
+
+    override fun viewDestroyed() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
