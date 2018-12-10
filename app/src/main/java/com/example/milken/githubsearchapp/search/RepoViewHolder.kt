@@ -6,17 +6,17 @@ import com.example.milken.githubsearchapp.data.models.BaseItem
 import com.example.milken.githubsearchapp.data.models.Repo
 import kotlinx.android.synthetic.main.repo_item_view.view.*
 
-class RepoViewHolder(override val view: View) : BaseViewHolder(view) {
+class RepoViewHolder(view: View) : BaseViewHolder(view) {
 
     override fun configure(baseItem: BaseItem) {
         val repo = baseItem as Repo
-        view.idTextView.text = repo.id.toString()
-        view.nameTextView.text = repo.name
+        itemView.idTextView.text = repo.id.toString()
+        itemView.nameTextView.text = repo.name
 
-        view.descTextView.visibility = if (repo.description == null) View.GONE else View.VISIBLE
+        itemView.descTextView.visibility = if (repo.description == null) View.GONE else View.VISIBLE
 
         repo.description?.let {
-            view.descTextView.text = it
+            itemView.descTextView.text = it
         }
     }
 
