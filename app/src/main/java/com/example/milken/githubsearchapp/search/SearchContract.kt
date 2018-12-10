@@ -4,9 +4,10 @@ interface SearchContract {
 
     interface Presenter {
         fun textChanged(text: String)
+        fun setView(view: View)
 
-        fun start()
-        fun stop()
+        fun viewSetUp()
+        fun viewDestroyed()
     }
 
     interface View {
