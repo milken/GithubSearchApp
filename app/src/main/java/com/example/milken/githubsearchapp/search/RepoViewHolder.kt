@@ -12,7 +12,12 @@ class RepoViewHolder(override val view: View) : BaseViewHolder(view) {
         val repo = baseItem as Repo
         view.idTextView.text = repo.id.toString()
         view.nameTextView.text = repo.name
-        view.descTextView.text = repo.description
+
+        view.descTextView.visibility = if (repo.description == null) View.GONE else View.VISIBLE
+
+        repo.description?.let {
+            view.descTextView.text = it
+        }
     }
 
 
