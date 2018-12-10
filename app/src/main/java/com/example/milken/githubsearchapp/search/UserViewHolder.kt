@@ -1,6 +1,5 @@
 package com.example.milken.githubsearchapp.search
 
-import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.example.milken.githubsearchapp.data.models.BaseItem
 import com.example.milken.githubsearchapp.data.models.User

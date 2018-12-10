@@ -1,10 +1,8 @@
 package com.example.milken.githubsearchapp.di
 
 import com.example.milken.githubsearchapp.data.apis.GithubSearchApi
-import com.example.milken.githubsearchapp.search.SearchActivity
 import com.example.milken.githubsearchapp.search.SearchContract
 import com.example.milken.githubsearchapp.search.SearchPresenterImpl
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit
