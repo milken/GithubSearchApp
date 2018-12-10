@@ -57,7 +57,7 @@ class DetailsActivity : AppCompatActivity(), DetailsContract.View {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun configFollowersCountText(followersCount: String) {
+    override fun configFollowersCountText(followersCount: Int) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
