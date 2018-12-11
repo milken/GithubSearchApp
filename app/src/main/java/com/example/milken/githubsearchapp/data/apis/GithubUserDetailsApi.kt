@@ -6,6 +6,6 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface GithubUserDetailsApi {
-    @GET("search/users/{login}")
+    @GET("users/{login}")
     fun getUserDetails(@Path("login") login: String): Observable<User>
 }
