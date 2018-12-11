@@ -1,12 +1,13 @@
 package com.example.milken.githubsearchapp.ui.search
 
+import com.example.milken.githubsearchapp.data.common.RequestCallback
 import com.example.milken.githubsearchapp.data.models.BaseItem
 import com.example.milken.githubsearchapp.data.models.User
 import io.reactivex.Observable
 
 interface SearchContract {
 
-    interface Presenter {
+    interface Presenter : RequestCallback<List<BaseItem>> {
         fun setTextChangeObservable(textChangeObservable: Observable<CharSequence>)
         fun setView(view: View)
 
@@ -26,5 +27,11 @@ interface SearchContract {
         fun showProgressBar()
         fun hideProgressBar()
         fun startDetailsActivity(user: User)
+    }
+
+    interface Repository {
+        fun setRequestCallback(requestCallback: RequestCallback<List<BaseItem>>)
+        fun fetchDataWith(query: String)
+        fun viewDestroyed()
     }
 }

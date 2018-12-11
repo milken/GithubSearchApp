@@ -1,36 +1,29 @@
 package com.example.milken.githubsearchapp.ui.search
 
 import android.util.Log
-import com.example.milken.githubsearchapp.data.apis.GithubSearchApi
 import com.example.milken.githubsearchapp.data.models.BaseItem
-import com.example.milken.githubsearchapp.data.models.ReposResponse
 import com.example.milken.githubsearchapp.data.models.User
-import com.example.milken.githubsearchapp.data.models.UsersResponse
-import com.example.milken.githubsearchapp.utils.SchedulerProvider
+import com.example.milken.githubsearchapp.utils.RxUtil
 import io.reactivex.Observable
-import io.reactivex.Scheduler
-import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import io.reactivex.functions.BiFunction
-import io.reactivex.schedulers.Schedulers
 import retrofit2.HttpException
-import java.util.concurrent.TimeUnit
 
 
 class SearchPresenterImpl(
-    private val githubSearchApi: GithubSearchApi,
-    private val schedulerProvider: SchedulerProvider
+
+    private val searchRepository: SearchContract.Repository,
+    private val rxUtil: RxUtil,
+    private val compositeDisposable: CompositeDisposable
 ) : SearchContract.Presenter {
     private lateinit var view: SearchContract.View
-
-    private var textChangeDisposable: Disposable? = null
-    private var requestDisposable: Disposable? = null
 
     override fun setView(view: SearchContract.View) {
         this.view = view
     }
 
     override fun viewSetUp() {
+        searchRepository.setRequestCallback(this)
         view.initSearchList()
         view.initTextWatcher()
     }
@@ -40,56 +33,34 @@ class SearchPresenterImpl(
     }
 
     override fun setTextChangeObservable(textChangeObservable: Observable<CharSequence>) {
-        val sth = textChangeObservable
-            .debounce(250, TimeUnit.MILLISECONDS, Schedulers.io())
-            .distinct()
-            .filter { text -> !text.isBlank() }
+        val textChangeDisposable = rxUtil.searchObservableFrom(textChangeObservable)
+            .subscribe(
+                { processNewText(it) },
+                { Log.e("myTag", "error in setTextChangeObservable - shouldn't happen") })
 
-        textChangeDisposable = sth.subscribe({
-            processTextChange(it.toString())
-        }, {
-            Log.e("myTag", "error in textChangeObservable")
-        })
+        compositeDisposable.add(textChangeDisposable)
+    }
+
+    private fun processNewText(text: String) {
+        view.showProgressBar()
+        searchRepository.fetchDataWith(text)
     }
 
     override fun viewDestroyed() {
-        requestDisposable?.dispose()
-        textChangeDisposable?.dispose()
+        compositeDisposable.dispose()
     }
 
-    private fun processTextChange(text: String) {
-        view.showProgressBar()
-        requestDisposable?.dispose()
-
-        requestDisposable = createRequestObservable(text)
+    override fun requestSuccess(requestResult: List<BaseItem>) {
+        view.hideProgressBar()
+        view.updateSearchList(requestResult)
     }
 
-    private fun createRequestObservable(query: String): Disposable =
-        Observable
-            .zip(
-                getUserListRequest(query),
-                getRepoListRequest(query),
-                BiFunction<UsersResponse, ReposResponse, List<BaseItem>> { (userList), (repoList) ->
-                    val resultList = arrayListOf<BaseItem>()
-                    resultList.addAll(userList)
-                    resultList.addAll(repoList)
-                    resultList
-                })
-            .observeOn(schedulerProvider.computation())
-            .flatMapIterable { t1 -> t1 }
-            .sorted { t1, t2 -> (t1.id - t2.id).toInt() }
-            .toList()
-            .observeOn(schedulerProvider.ui())
-            .subscribe(
-                { result ->
-                    view.updateSearchList(result)
-                    view.hideProgressBar()
-                },
-                { err -> processError(err) })
+    override fun requestError(message: Throwable) {
+        view.hideProgressBar()
+        processError(message)
+    }
 
     private fun processError(err: Throwable?) {
-        view.hideProgressBar()
-
         err?.let {
             if (err is HttpException) {
                 Log.d("myTag", "err response = ${err.response()}")
@@ -103,18 +74,5 @@ class SearchPresenterImpl(
             view.showError(err.localizedMessage)
         }
     }
-
-
-    private fun getUserListRequest(query: String): Observable<UsersResponse> =
-        githubSearchApi
-            .getUserList(query)
-            .subscribeOn(schedulerProvider.io())
-            .observeOn(schedulerProvider.io())
-
-    private fun getRepoListRequest(query: String): Observable<ReposResponse> =
-        githubSearchApi
-            .getRepoList(query)
-            .subscribeOn(schedulerProvider.io())
-            .observeOn(schedulerProvider.io())
 
 }

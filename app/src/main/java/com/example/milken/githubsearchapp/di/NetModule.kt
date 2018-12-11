@@ -1,5 +1,6 @@
 package com.example.milken.githubsearchapp.di
 
+import com.example.milken.githubsearchapp.utils.RxUtil
 import com.example.milken.githubsearchapp.utils.SchedulerProvider
 import com.example.milken.githubsearchapp.utils.SchedulerProviderImpl
 import com.squareup.moshi.Moshi
@@ -7,6 +8,7 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import okhttp3.logging.HttpLoggingInterceptor
 import dagger.Provides
+import io.reactivex.disposables.CompositeDisposable
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -64,5 +66,16 @@ class NetModule {
     @Singleton
     fun getSchedulerProvider(): SchedulerProvider {
         return SchedulerProviderImpl()
+    }
+
+    @Provides
+    fun getCompositeDisposable(): CompositeDisposable {
+        return CompositeDisposable()
+    }
+
+    @Provides
+    @Singleton
+    fun getRxUtil(schedulerProvider: SchedulerProvider): RxUtil {
+        return RxUtil(schedulerProvider.io())
     }
 }
