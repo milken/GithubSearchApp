@@ -7,33 +7,33 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.impl.stub.MockKStub
 import io.mockk.mockk
 import io.mockk.verify
+import io.mockk.verifyAll
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.schedulers.TestScheduler
 import io.reactivex.subjects.PublishSubject
+import net.bytebuddy.matcher.ElementMatchers.any
 import org.junit.Before
 import org.junit.Test
+import java.util.concurrent.TimeUnit
 
 class SearchPresenterImplTest {
 
-    private val testScheduler = SchedulerProviderFake()
-    private lateinit var rxUtil: RxUtil
+    private val testScheduler = TestScheduler()
+    private val rxUtil = RxUtil(testScheduler)
 
-
-    private lateinit var searchPresenter: SearchContract.Presenter
 
     private val searchRepository = mockk<SearchContract.Repository>(relaxed = true)
-    private val compositeDisposable = mockk<CompositeDisposable>()
-
+    private val compositeDisposable = CompositeDisposable()
     private val view = mockk<SearchContract.View>(relaxed = true)
 
-//    private val textObservable = PublishSubject.create<CharSequence>()
+    private val searchPresenter = SearchPresenterImpl(searchRepository, rxUtil, compositeDisposable)
+
+    private val textObservable = PublishSubject.create<CharSequence>()
 
     @Before
     fun setUp() {
-        rxUtil = RxUtil(testScheduler.io())
-
-        searchPresenter = SearchPresenterImpl(searchRepository, rxUtil, compositeDisposable)
         searchPresenter.setView(view)
     }
 
@@ -60,14 +60,16 @@ class SearchPresenterImplTest {
 
     @Test
     fun setTextChangeObservable() {
-//        searchPresenter.setTextChangeObservable(textObservable)
-//
-//        val sth = rxUtil.searchObservableFrom(textObservable).subscribe()
-////        textObservable.onNext("abc")
-//
-//        verify {
-//            compositeDisposable.add(sth)
-//        }
+        searchPresenter.setTextChangeObservable(textObservable)
+
+        val sth = rxUtil.searchObservableFrom(textObservable).subscribe()
+        textObservable.onNext("abc")
+        testScheduler.advanceTimeBy(RxUtil.DEBOUNCE_TIME, TimeUnit.MILLISECONDS)
+
+        verifyAll {
+            compositeDisposable.add(sth)
+            searchRepository.fetchDataWith("abc")
+        }
 ////        searchPresenter.setTextChangeObservable(subject)
     }
 

@@ -1,6 +1,6 @@
 package com.example.milken.githubsearchapp.ui.search
 
-import android.util.Log
+import android.support.annotation.VisibleForTesting
 import com.example.milken.githubsearchapp.data.apis.GithubSearchApi
 import com.example.milken.githubsearchapp.data.common.RequestCallback
 import com.example.milken.githubsearchapp.data.models.BaseItem
@@ -18,9 +18,10 @@ class SearchRepositoryImpl(
     private val compositeDisposable: CompositeDisposable
 ) : SearchContract.Repository {
 
-    private var requestCallback: RequestCallback<List<BaseItem>>? = null
+    private lateinit var requestCallback: RequestCallback<List<BaseItem>>
 
-    private var currentRequestDisposable: Disposable? = null
+    @VisibleForTesting
+    var currentRequestDisposable: Disposable? = null
 
     override fun setRequestCallback(requestCallback: RequestCallback<List<BaseItem>>) {
        this.requestCallback = requestCallback
@@ -35,7 +36,6 @@ class SearchRepositoryImpl(
     }
 
     private fun createRequest(query: String): Disposable {
-        Log.d("myTag", "createRequest = $query")
         return Observable
             .zip(
                 getUserListRequest(query),
@@ -52,8 +52,8 @@ class SearchRepositoryImpl(
             .toList()
             .observeOn(schedulerProvider.ui())
             .subscribe(
-                { result -> requestCallback?.requestSuccess(result) },
-                { err -> requestCallback?.requestError(err) })
+                { result -> requestCallback.requestSuccess(result) },
+                { err -> requestCallback.requestError(err) })
     }
 
 
