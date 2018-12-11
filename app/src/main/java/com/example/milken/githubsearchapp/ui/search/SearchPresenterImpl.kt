@@ -6,6 +6,7 @@ import com.example.milken.githubsearchapp.data.models.BaseItem
 import com.example.milken.githubsearchapp.data.models.ReposResponse
 import com.example.milken.githubsearchapp.data.models.User
 import com.example.milken.githubsearchapp.data.models.UsersResponse
+import com.example.milken.githubsearchapp.utils.SchedulerProvider
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -17,7 +18,8 @@ import java.util.concurrent.TimeUnit
 
 
 class SearchPresenterImpl(
-    val githubSearchApi: GithubSearchApi
+    private val githubSearchApi: GithubSearchApi,
+    private val schedulerProvider: SchedulerProvider
 ) : SearchContract.Presenter {
     private lateinit var view: SearchContract.View
 
@@ -38,15 +40,16 @@ class SearchPresenterImpl(
     }
 
     override fun setTextChangeObservable(textChangeObservable: Observable<CharSequence>) {
-        textChangeDisposable = textChangeObservable
+        val sth = textChangeObservable
             .debounce(250, TimeUnit.MILLISECONDS, Schedulers.io())
             .distinct()
             .filter { text -> !text.isBlank() }
-            .subscribe({
-                processTextChange(it.toString())
-            }, {
-                Log.e("myTag", "error in textChangeObservable")
-            })
+
+        textChangeDisposable = sth.subscribe({
+            processTextChange(it.toString())
+        }, {
+            Log.e("myTag", "error in textChangeObservable")
+        })
     }
 
     override fun viewDestroyed() {
@@ -72,11 +75,11 @@ class SearchPresenterImpl(
                     resultList.addAll(repoList)
                     resultList
                 })
-            .observeOn(Schedulers.computation())
+            .observeOn(schedulerProvider.computation())
             .flatMapIterable { t1 -> t1 }
             .sorted { t1, t2 -> (t1.id - t2.id).toInt() }
             .toList()
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(schedulerProvider.ui())
             .subscribe(
                 { result ->
                     view.updateSearchList(result)
@@ -105,12 +108,13 @@ class SearchPresenterImpl(
     private fun getUserListRequest(query: String): Observable<UsersResponse> =
         githubSearchApi
             .getUserList(query)
-            .subscribeOn(Schedulers.io())
-            .observeOn(Schedulers.io())
+            .subscribeOn(schedulerProvider.io())
+            .observeOn(schedulerProvider.io())
 
     private fun getRepoListRequest(query: String): Observable<ReposResponse> =
         githubSearchApi
             .getRepoList(query)
-            .subscribeOn(Schedulers.io())
-            .observeOn(Schedulers.io())
+            .subscribeOn(schedulerProvider.io())
+            .observeOn(schedulerProvider.io())
+
 }

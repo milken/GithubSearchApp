@@ -1,5 +1,7 @@
 package com.example.milken.githubsearchapp.di
 
+import com.example.milken.githubsearchapp.utils.SchedulerProvider
+import com.example.milken.githubsearchapp.utils.SchedulerProviderImpl
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -56,5 +58,11 @@ class NetModule {
         val httpLoggingInterceptor = HttpLoggingInterceptor()
         httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BASIC
         return httpLoggingInterceptor
+    }
+
+    @Provides
+    @Singleton
+    fun getSchedulerProvider(): SchedulerProvider {
+        return SchedulerProviderImpl()
     }
 }
