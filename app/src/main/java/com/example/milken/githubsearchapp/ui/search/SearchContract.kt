@@ -7,7 +7,7 @@ import io.reactivex.Observable
 interface SearchContract {
 
     interface Presenter {
-        fun setTextChangeObservable(textObservable: Observable<CharSequence>)
+        fun setTextChangeObservable(textChangeObservable: Observable<CharSequence>)
         fun setView(view: View)
 
         fun userClicked(baseItem: BaseItem)

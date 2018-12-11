@@ -7,6 +7,7 @@ import com.example.milken.githubsearchapp.data.models.ReposResponse
 import com.example.milken.githubsearchapp.data.models.User
 import com.example.milken.githubsearchapp.data.models.UsersResponse
 import io.reactivex.Observable
+import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
@@ -36,14 +37,16 @@ class SearchPresenterImpl(
         view.startDetailsActivity(baseItem as User)
     }
 
-    override fun setTextChangeObservable(textObservable: Observable<CharSequence>) {
-        textChangeDisposable = textObservable
-            .debounce(250, TimeUnit.MILLISECONDS)
+    override fun setTextChangeObservable(textChangeObservable: Observable<CharSequence>) {
+        textChangeDisposable = textChangeObservable
+            .debounce(250, TimeUnit.MILLISECONDS, Schedulers.io())
             .distinct()
             .filter { text -> !text.isBlank() }
-            .subscribe {
+            .subscribe({
                 processTextChange(it.toString())
-            }
+            }, {
+                Log.e("myTag", "error in textChangeObservable")
+            })
     }
 
     override fun viewDestroyed() {
