@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">GithubSearchApp</string>
+    <string name="followers_count_text">Followers count: %d</string>
+    <string name="followers_basic_text">Followers count: ...</string>
 </resources>

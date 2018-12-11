@@ -1,6 +1,7 @@
 package com.example.milken.githubsearchapp.ui.details
 
 import android.annotation.SuppressLint
+import android.util.Log
 import com.example.milken.githubsearchapp.data.apis.GithubUserDetailsApi
 import com.example.milken.githubsearchapp.data.models.User
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -34,10 +35,10 @@ class DetailsPresenterImpl(
         githubUserDetailsApi.getUserDetails(user.login)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
+            .subscribe({
                 user = it
                 updateUI()
-            }
+            }, { err -> Log.d("myTag","err = ${err.localizedMessage}") })
     }
 
     private fun updateUI() {

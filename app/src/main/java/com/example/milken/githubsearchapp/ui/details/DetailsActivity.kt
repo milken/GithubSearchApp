@@ -10,12 +10,15 @@ import com.example.milken.githubsearchapp.data.models.User
 import com.example.milken.githubsearchapp.di.DetailsModule
 import com.example.milken.githubsearchapp.di.SearchModule
 import com.example.milken.githubsearchapp.ui.MyApp
+import com.example.milken.githubsearchapp.utils.GlideApp
+import kotlinx.android.synthetic.main.details_activity.*
 import javax.inject.Inject
+import kotlin.math.log
 
 class DetailsActivity : AppCompatActivity(), DetailsContract.View {
 
     @Inject
-    private lateinit var presenter: DetailsContract.Presenter
+    lateinit var presenter: DetailsContract.Presenter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +36,8 @@ class DetailsActivity : AppCompatActivity(), DetailsContract.View {
 
         val user = intent.getParcelableExtra<User>(INTENT_USER_KEY)
         presenter.setUser(user)
+
+        presenter.viewSetUp()
     }
 
     private fun initDagger() {
@@ -50,15 +55,18 @@ class DetailsActivity : AppCompatActivity(), DetailsContract.View {
     }
 
     override fun configLoginText(login: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        loginTextView.text = login
     }
 
     override fun configProfileImage(avatarUrl: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        GlideApp
+            .with(this)
+            .load(avatarUrl)
+            .into(profileImageView)
     }
 
     override fun configFollowersCountText(followersCount: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        followersCountTextView.text = String.format(resources.getString(R.string.followers_count_text), followersCount)
     }
 
     companion object {
