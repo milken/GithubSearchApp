@@ -1,6 +1,8 @@
 package com.example.milken.githubsearchapp.ui.search
 
 import com.example.milken.githubsearchapp.data.apis.GithubSearchApi
+import com.example.milken.githubsearchapp.data.models.User
+import com.example.milken.githubsearchapp.utils.SchedulerProviderFake
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifyAll
@@ -15,16 +17,17 @@ class SearchPresenterImplTest {
 
     private val githubSearchApi = mockk<GithubSearchApi>(relaxed = true)
     private val view = mockk<SearchContract.View>(relaxed = true)
+    private val testScheduler = SchedulerProviderFake()
 
     @Before
     fun setUp() {
 
-        searchPresenterImpl = SearchPresenterImpl(githubSearchApi)
+        searchPresenterImpl = SearchPresenterImpl(githubSearchApi, testScheduler)
         searchPresenterImpl.setView(view)
     }
 
     @Test
-    fun viewSetUpAssertViewInitSearchListAndTextWatcher() {
+    fun viewSetUp_assertInitSearchListAndInitTextWatcherWithView() {
         searchPresenterImpl.viewSetUp()
 
         verify {
@@ -34,8 +37,13 @@ class SearchPresenterImplTest {
     }
 
     @Test
-    fun userClicked() {
+    fun userClicked_assertStartDetailsActivityWithView() {
+        val user = mockk<User>()
+        searchPresenterImpl.userClicked(user)
 
+        verify {
+            view.startDetailsActivity(user)
+        }
     }
 
     @Test
