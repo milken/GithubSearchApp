@@ -5,6 +5,7 @@ import android.util.Log
 import com.example.milken.githubsearchapp.data.apis.GithubUserDetailsApi
 import com.example.milken.githubsearchapp.data.models.User
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 class DetailsPresenterImpl(
@@ -14,6 +15,8 @@ class DetailsPresenterImpl(
 
     private lateinit var view: DetailsContract.View
     private lateinit var user: User
+
+    private var requestDisposable: Disposable? = null
 
     override fun setView(view: DetailsContract.View) {
         this.view = view
@@ -30,9 +33,10 @@ class DetailsPresenterImpl(
         }
     }
 
+
     @SuppressLint("CheckResult")
     private fun fetchUserDetails() {
-        githubUserDetailsApi.getUserDetails(user.login)
+        requestDisposable = githubUserDetailsApi.getUserDetails(user.login)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
@@ -50,6 +54,6 @@ class DetailsPresenterImpl(
     }
 
     override fun viewDestroyed() {
-
+        requestDisposable?.dispose()
     }
 }

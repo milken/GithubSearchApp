@@ -7,5 +7,5 @@ import dagger.Subcomponent
 @Subcomponent(modules = [DetailsModule::class])
 interface DetailsComponent {
 
-    fun inject (detailsActivity: DetailsActivity)
+    fun inject(detailsActivity: DetailsActivity)
 }
