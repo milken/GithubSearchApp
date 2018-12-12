@@ -1,5 +1,6 @@
 package com.example.milken.githubsearchapp.di
 
+import com.example.milken.githubsearchapp.utils.ErrorParser
 import com.example.milken.githubsearchapp.utils.RxUtil
 import com.example.milken.githubsearchapp.utils.SchedulerProvider
 import com.example.milken.githubsearchapp.utils.SchedulerProviderImpl
@@ -77,5 +78,11 @@ class NetModule {
     @Singleton
     fun getRxUtil(schedulerProvider: SchedulerProvider): RxUtil {
         return RxUtil(schedulerProvider.io())
+    }
+
+    @Provides
+    @Singleton
+    fun getErrorParser(): ErrorParser {
+        return ErrorParser()
     }
 }

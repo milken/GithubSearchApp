@@ -1,21 +1,22 @@
 package com.example.milken.githubsearchapp.ui.search
 
 import android.support.annotation.VisibleForTesting
+import android.util.Log
 import com.example.milken.githubsearchapp.data.apis.GithubSearchApi
 import com.example.milken.githubsearchapp.data.common.RequestCallback
 import com.example.milken.githubsearchapp.data.models.BaseItem
 import com.example.milken.githubsearchapp.data.models.ReposResponse
 import com.example.milken.githubsearchapp.data.models.UsersResponse
+import com.example.milken.githubsearchapp.utils.ErrorParser
 import com.example.milken.githubsearchapp.utils.SchedulerProvider
 import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
 
 class SearchRepositoryImpl(
     private val githubSearchApi: GithubSearchApi,
     private val schedulerProvider: SchedulerProvider,
-    private val compositeDisposable: CompositeDisposable
+    private val errorParser: ErrorParser
 ) : SearchContract.Repository {
 
     private lateinit var requestCallback: RequestCallback<List<BaseItem>>
@@ -28,11 +29,9 @@ class SearchRepositoryImpl(
     }
 
     override fun fetchDataWith(query: String) {
-        disposeCurrentRequest()
-        compositeDisposable.clear()
+        currentRequestDisposable?.dispose()
 
-        val requestDisposable = createRequest(query)
-        compositeDisposable.add(requestDisposable)
+        currentRequestDisposable = createRequest(query)
     }
 
     private fun createRequest(query: String): Disposable {
@@ -53,13 +52,11 @@ class SearchRepositoryImpl(
             .observeOn(schedulerProvider.ui())
             .subscribe(
                 { result -> requestCallback.requestSuccess(result) },
-                { err -> requestCallback.requestError(err) })
+                { err -> requestCallback.requestError(errorParser.getMessage(err)) })
     }
 
-
-
     override fun viewDestroyed() {
-        compositeDisposable.dispose()
+        currentRequestDisposable?.dispose()
     }
 
     private fun getUserListRequest(query: String): Observable<UsersResponse> =
@@ -74,7 +71,4 @@ class SearchRepositoryImpl(
             .subscribeOn(schedulerProvider.io())
             .observeOn(schedulerProvider.io())
 
-    private fun disposeCurrentRequest() {
-        currentRequestDisposable?.dispose()
-    }
 }

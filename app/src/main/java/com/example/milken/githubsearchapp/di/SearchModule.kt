@@ -4,6 +4,7 @@ import com.example.milken.githubsearchapp.data.apis.GithubSearchApi
 import com.example.milken.githubsearchapp.ui.search.SearchContract
 import com.example.milken.githubsearchapp.ui.search.SearchPresenterImpl
 import com.example.milken.githubsearchapp.ui.search.SearchRepositoryImpl
+import com.example.milken.githubsearchapp.utils.ErrorParser
 import com.example.milken.githubsearchapp.utils.RxUtil
 import com.example.milken.githubsearchapp.utils.SchedulerProvider
 import dagger.Module
@@ -25,10 +26,10 @@ class SearchModule {
     fun getSearchRepository(
         githubSearchApi: GithubSearchApi,
         schedulerProvider: SchedulerProvider,
-        compositeDisposable: CompositeDisposable
+        errorParser: ErrorParser
     ): SearchContract.Repository {
         return SearchRepositoryImpl(
-            githubSearchApi, schedulerProvider, compositeDisposable
+            githubSearchApi, schedulerProvider, errorParser
         )
     }
 

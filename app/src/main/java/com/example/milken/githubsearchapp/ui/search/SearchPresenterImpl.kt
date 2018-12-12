@@ -6,8 +6,6 @@ import com.example.milken.githubsearchapp.data.models.User
 import com.example.milken.githubsearchapp.utils.RxUtil
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
-import retrofit2.HttpException
 
 
 class SearchPresenterImpl(
@@ -55,24 +53,11 @@ class SearchPresenterImpl(
         view.updateSearchList(requestResult)
     }
 
-    override fun requestError(message: Throwable) {
+    override fun requestError(message: String) {
         view.hideProgressBar()
-        processError(message)
+        view.showError(message)
     }
 
-    private fun processError(err: Throwable?) {
-        err?.let {
-            if (err is HttpException) {
-                Log.d("myTag", "err response = ${err.response()}")
 
-                if (err.code() == 403) {
-                    view.showError("You have exceeded requests limit")
-                    return
-                }
-            }
-            Log.d("myTag", "err = ${err.localizedMessage}")
-            view.showError(err.localizedMessage)
-        }
-    }
 
 }

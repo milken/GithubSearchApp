@@ -3,6 +3,7 @@ package com.example.milken.githubsearchapp.ui.search
 import com.example.milken.githubsearchapp.data.apis.GithubSearchApi
 import com.example.milken.githubsearchapp.data.common.RequestCallback
 import com.example.milken.githubsearchapp.data.models.*
+import com.example.milken.githubsearchapp.utils.ErrorParser
 import com.example.milken.githubsearchapp.utils.SchedulerProviderFake
 import io.mockk.mockk
 import io.mockk.every
@@ -11,9 +12,13 @@ import io.mockk.verifyOrder
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import okhttp3.MediaType
+import okhttp3.ResponseBody
 import org.junit.Test
 
 import org.junit.Before
+import retrofit2.HttpException
+import retrofit2.Response
 import java.lang.Exception
 
 class SearchRepositoryImplTest {
@@ -21,10 +26,10 @@ class SearchRepositoryImplTest {
 
     private val requestCallback = mockk<RequestCallback<List<BaseItem>>>(relaxed = true)
     private val githubSearchApi = mockk<GithubSearchApi>(relaxed = true)
-    private val compositeDisposable = mockk<CompositeDisposable>(relaxed = true)
     private val schedulerProvider = SchedulerProviderFake()
+    private val errorParser = ErrorParser()
 
-    private val searchRepository = SearchRepositoryImpl(githubSearchApi, schedulerProvider, compositeDisposable)
+    private val searchRepository = SearchRepositoryImpl(githubSearchApi, schedulerProvider, errorParser)
 
     private val userId1 = User(id = 1, login = "Adam", avatarUrl = "avatar_url", detailsUrl = "url")
     private val userId10 = User(id = 10, login = "Alicja", avatarUrl = "avatar_url", detailsUrl = "url")
@@ -52,17 +57,16 @@ class SearchRepositoryImplTest {
     }
 
     @Test
-    fun fetchDataWith_assertCompositeDisposableClearAndAdd() {
+    fun fetchDataWith_assertCurrentDisposableDisposed() {
         searchRepository.fetchDataWith(requestQuery)
 
         verifyOrder {
-            compositeDisposable.clear()
-            compositeDisposable.add(any())
+            currentDisposableMock.dispose()
         }
     }
 
     @Test
-    fun fetchDataWith_assertRequestSuccessWithSortedList() {
+    fun fetchDataWith_assertRequestSuccess_sendsSortedList() {
         val userList = listOf(userId1, userId10)
         val repoList = listOf(repoId2, repoId3)
 
@@ -82,28 +86,47 @@ class SearchRepositoryImplTest {
     }
 
     @Test
-    fun fetchDataWith_assertRequestFailureWithMessage() {
+    fun fetchDataWith_assertRequestFailsWithException_callsRequestErrorWithCorrectMessage() {
         val userList = listOf(userId1, userId10)
-        val error = Exception("error")
+        val message = "error"
+        val exception = Exception(message)
+
         val userResponse = UsersResponse(userList)
 
         every { githubSearchApi.getUserList("asd") } returns Observable.just(userResponse)
-        every { githubSearchApi.getRepoList("asd") } returns (Observable.error(error))
+        every { githubSearchApi.getRepoList("asd") } returns (Observable.error(exception))
 
         searchRepository.fetchDataWith("asd")
 
         verify{
-            requestCallback.requestError(error)
+            requestCallback.requestError(message)
         }
     }
 
+    @Test
+    fun fetchDataWith_assertRequestFailsWithHttp403Exception_callsRequestErrorWithCorrectMessage() {
+        val userList = listOf(userId1, userId10)
+        val exception = HttpException(Response.error<Any>(403, ResponseBody.create(MediaType.parse("text/plain"), "Forbidden")))
+
+        val userResponse = UsersResponse(userList)
+
+        every { githubSearchApi.getUserList("asd") } returns Observable.just(userResponse)
+        every { githubSearchApi.getRepoList("asd") } returns (Observable.error(exception))
+
+        searchRepository.fetchDataWith("asd")
+
+        verify{
+            requestCallback.requestError(ErrorParser.error403Message)
+        }
+    }
 
     @Test
     fun viewDestroyed() {
         searchRepository.viewDestroyed()
+        searchRepository.currentRequestDisposable = currentDisposableMock
 
         verify {
-            compositeDisposable.dispose()
+            currentDisposableMock.dispose()
         }
     }
 }
