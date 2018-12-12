@@ -45,6 +45,7 @@ class SearchPresenterImpl(
     }
 
     override fun viewDestroyed() {
+        searchRepository.viewDestroyed()
         compositeDisposable.dispose()
     }
 

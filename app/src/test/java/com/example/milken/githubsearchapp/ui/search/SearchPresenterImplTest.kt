@@ -81,11 +81,12 @@ class SearchPresenterImplTest {
     }
 
     @Test
-    fun viewDestroyed_compositeDisposableDispose() {
+    fun viewDestroyed_compositeDisposableDispose_viewDestroyedWithSearchRepository() {
         searchPresenter.viewDestroyed()
 
-        verify {
+        verifyAll {
             compositeDisposable.dispose()
+            searchRepository.viewDestroyed()
         }
     }
 
