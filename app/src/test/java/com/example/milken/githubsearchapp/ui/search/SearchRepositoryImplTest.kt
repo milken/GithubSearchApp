@@ -78,13 +78,9 @@ class SearchRepositoryImplTest {
 
     @Test
     fun fetchDataWith_assertRequestFailsWithException_callsRequestErrorWithCorrectMessage() {
-        val userList = listOf(userId1, userId10)
         val message = "error"
         val exception = Exception(message)
 
-        val userResponse = UsersResponse(userList)
-
-        every { githubSearchApi.getUserList(requestQuery) } returns Observable.just(userResponse)
         every { githubSearchApi.getRepoList(requestQuery) } returns (Observable.error(exception))
 
         searchRepository.fetchDataWith(requestQuery)
@@ -96,13 +92,9 @@ class SearchRepositoryImplTest {
 
     @Test
     fun fetchDataWith_assertRequestFailsWithHttp403Exception_callsRequestErrorWithCorrectMessage() {
-        val userList = listOf(userId1, userId10)
         val exception = HttpException(Response.error<Any>(403, ResponseBody.create(MediaType.parse("text/plain"), "Forbidden")))
 
-        val userResponse = UsersResponse(userList)
-
-        every { githubSearchApi.getUserList(requestQuery) } returns Observable.just(userResponse)
-        every { githubSearchApi.getRepoList(requestQuery) } returns (Observable.error(exception))
+        every { githubSearchApi.getUserList(requestQuery) } returns Observable.error(exception)
 
         searchRepository.fetchDataWith(requestQuery)
 
