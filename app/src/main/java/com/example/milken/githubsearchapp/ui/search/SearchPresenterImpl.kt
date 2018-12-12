@@ -1,5 +1,6 @@
 package com.example.milken.githubsearchapp.ui.search
 
+import android.support.annotation.VisibleForTesting
 import android.util.Log
 import com.example.milken.githubsearchapp.data.models.BaseItem
 import com.example.milken.githubsearchapp.data.models.SearchDataParcel
@@ -17,7 +18,9 @@ class SearchPresenterImpl(
 ) : SearchContract.Presenter {
 
     private lateinit var view: SearchContract.View
-    private var data: List<BaseItem> = emptyList()
+
+    @VisibleForTesting
+    var data: List<BaseItem> = emptyList()
 
     override fun setView(view: SearchContract.View) {
         this.view = view

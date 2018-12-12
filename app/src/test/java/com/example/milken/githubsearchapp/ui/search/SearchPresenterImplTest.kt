@@ -3,24 +3,16 @@ package com.example.milken.githubsearchapp.ui.search
 import com.example.milken.githubsearchapp.data.models.BaseItem
 import com.example.milken.githubsearchapp.data.models.User
 import com.example.milken.githubsearchapp.utils.RxUtil
-import com.example.milken.githubsearchapp.utils.SchedulerProviderFake
 import io.mockk.clearMocks
-import io.mockk.impl.annotations.MockK
-import io.mockk.impl.stub.MockKStub
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifyAll
-import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.schedulers.TestScheduler
 import io.reactivex.subjects.PublishSubject
-import net.bytebuddy.implementation.bind.annotation.RuntimeType
-import net.bytebuddy.matcher.ElementMatchers.any
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import java.util.concurrent.TimeUnit
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SearchPresenterImplTest {
@@ -34,7 +26,7 @@ class SearchPresenterImplTest {
 
     private val textObservable = PublishSubject.create<CharSequence>()
 
-    private val searchPresenter: SearchContract.Presenter =
+    private val searchPresenter =
         SearchPresenterImpl(searchRepository, rxUtil, compositeDisposable).apply {
             this.setView(view)
             this.setTextChangeObservable(textObservable)
@@ -52,10 +44,28 @@ class SearchPresenterImplTest {
         searchPresenter.viewSetUp()
 
         verifyAll {
+            viewSetUp_calls()
+        }
+    }
+
+    @Test
+    fun viewSetUp_withRestoredData_additionalyCallsUpdateSearchListWithView(){
+        val data = listOf(User(id = 123, detailsUrl = "details_url", avatarUrl = "avatar_url", login = "Adam"))
+        searchPresenter.data = data
+
+        searchPresenter.viewSetUp()
+
+        verifyAll {
+            viewSetUp_calls()
+            view.updateSearchList(data)
+        }
+    }
+
+    private fun viewSetUp_calls() {
+
             searchRepository.setRequestCallback(searchPresenter)
             view.initSearchList()
             view.initTextWatcher()
-        }
     }
 
     @Test
@@ -118,5 +128,10 @@ class SearchPresenterImplTest {
             view.hideProgressBar()
             view.showError(message)
         }
+    }
+
+    @Test
+    fun getDataParcel_createsObjectWithCorrectList() {
+        assert(searchPresenter.getDataParcel().itemList == searchPresenter.data)
     }
 }
