@@ -17,10 +17,12 @@ import okhttp3.ResponseBody
 
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import retrofit2.HttpException
 import retrofit2.Response
 import java.lang.Exception
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DetailsRepositoryImplTest {
 
     private val requestCallback = mockk<RequestCallback<User>>(relaxed = true)

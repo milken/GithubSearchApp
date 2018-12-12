@@ -4,7 +4,9 @@ import com.example.milken.githubsearchapp.data.models.User
 import io.mockk.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DetailsPresenterImplTest {
 
     private val detailsRepository = mockk<DetailsContract.Repository>(relaxed = true)
