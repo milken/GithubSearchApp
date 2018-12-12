@@ -11,11 +11,12 @@ interface DetailsContract {
 
         fun viewSetUp()
         fun viewDestroyed()
+        fun getData(): User
     }
 
     interface View {
         fun finishWithError(message: String)
-        fun continuteViewSetUp()
+        fun continueViewSetUp()
 
         fun configLoginText(login: String)
         fun configProfileImage(avatarUrl: String)

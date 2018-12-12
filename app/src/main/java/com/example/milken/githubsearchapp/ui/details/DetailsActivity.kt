@@ -6,9 +6,11 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import com.example.milken.githubsearchapp.R
+import com.example.milken.githubsearchapp.data.models.SearchDataParcel
 import com.example.milken.githubsearchapp.data.models.User
 import com.example.milken.githubsearchapp.di.DetailsModule
 import com.example.milken.githubsearchapp.ui.MyApp
+import com.example.milken.githubsearchapp.ui.search.SearchActivity
 import com.example.milken.githubsearchapp.utils.GlideApp
 import kotlinx.android.synthetic.main.details_activity.*
 import javax.inject.Inject
@@ -24,13 +26,17 @@ class DetailsActivity : AppCompatActivity(), DetailsContract.View {
         setContentView(R.layout.details_activity)
         initDagger()
 
-        val user: User? = tryGetUserData()
+        val user: User? = tryGetUserData(savedInstanceState)
 
         presenter.setView(this)
         presenter.trySetValidUserData(user)
     }
 
-    private fun tryGetUserData(): User? {
+    private fun tryGetUserData(savedInstanceState: Bundle?): User? {
+        savedInstanceState?.let {
+            it.getParcelable<User>(DetailsActivity.SAVE_INSTANCE_USER_KEY)?.let { return it }
+        }
+
         if (intent.hasExtra(INTENT_USER_KEY)){
             return intent.getParcelableExtra(INTENT_USER_KEY)
         }
@@ -38,7 +44,12 @@ class DetailsActivity : AppCompatActivity(), DetailsContract.View {
         return null
     }
 
-    override fun continuteViewSetUp() {
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        outState?.putParcelable(SAVE_INSTANCE_USER_KEY, presenter.getData())
+    }
+
+    override fun continueViewSetUp() {
         presenter.viewSetUp()
     }
 
@@ -75,6 +86,7 @@ class DetailsActivity : AppCompatActivity(), DetailsContract.View {
 
     companion object {
         private const val INTENT_USER_KEY = "USER"
+        private const val SAVE_INSTANCE_USER_KEY = "SAVE_INSTANCE_USER_KEY"
 
         fun newIntent(context: Context, user: User): Intent {
             val intent = Intent(context, DetailsActivity::class.java)

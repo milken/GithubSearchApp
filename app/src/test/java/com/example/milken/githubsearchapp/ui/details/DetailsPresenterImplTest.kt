@@ -34,7 +34,7 @@ class DetailsPresenterImplTest {
             view.finishWithError(DetailsPresenterImpl.FINISH_ERROR_MESSAGE)
         }
         verify(inverse = true) {
-            view.continuteViewSetUp()
+            view.continueViewSetUp()
         }
     }
 
@@ -43,7 +43,7 @@ class DetailsPresenterImplTest {
         detailsPresenter.trySetValidUserData(basicUser)
 
         verify {
-            view.continuteViewSetUp()
+            view.continueViewSetUp()
         }
         verify(inverse = true) {
             view.finishWithError(any())

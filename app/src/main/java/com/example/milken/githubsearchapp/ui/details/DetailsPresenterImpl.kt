@@ -23,7 +23,7 @@ class DetailsPresenterImpl(
         }
 
         this.user = user
-        this.view.continuteViewSetUp()
+        this.view.continueViewSetUp()
     }
 
     override fun viewSetUp() {
@@ -57,6 +57,8 @@ class DetailsPresenterImpl(
     override fun viewDestroyed() {
         detailsRepository.viewDestroyed()
     }
+
+    override fun getData(): User = user
 
     companion object {
         const val FINISH_ERROR_MESSAGE = "No user data!"
