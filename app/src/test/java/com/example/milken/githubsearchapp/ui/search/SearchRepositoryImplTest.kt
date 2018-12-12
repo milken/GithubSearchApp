@@ -57,15 +57,6 @@ class SearchRepositoryImplTest {
     }
 
     @Test
-    fun fetchDataWith_assertCurrentDisposableDisposed() {
-        searchRepository.fetchDataWith(requestQuery)
-
-        verifyOrder {
-            currentDisposableMock.dispose()
-        }
-    }
-
-    @Test
     fun fetchDataWith_assertRequestSuccess_sendsSortedList() {
         val userList = listOf(userId1, userId10)
         val repoList = listOf(repoId2, repoId3)
@@ -121,9 +112,9 @@ class SearchRepositoryImplTest {
     }
 
     @Test
-    fun viewDestroyed() {
-        searchRepository.viewDestroyed()
+    fun viewDestroyed_assertCurrentRequestDisposed() {
         searchRepository.currentRequestDisposable = currentDisposableMock
+        searchRepository.viewDestroyed()
 
         verify {
             currentDisposableMock.dispose()
