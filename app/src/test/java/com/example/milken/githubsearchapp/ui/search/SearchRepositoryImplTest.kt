@@ -66,10 +66,10 @@ class SearchRepositoryImplTest {
         val userResponse = UsersResponse(userList)
         val reposResponse = ReposResponse(repoList)
 
-        every { githubSearchApi.getUserList("asd") } returns Observable.just(userResponse)
-        every { githubSearchApi.getRepoList("asd") } returns Observable.just(reposResponse)
+        every { githubSearchApi.getUserList(requestQuery) } returns Observable.just(userResponse)
+        every { githubSearchApi.getRepoList(requestQuery) } returns Observable.just(reposResponse)
 
-        searchRepository.fetchDataWith("asd")
+        searchRepository.fetchDataWith(requestQuery)
 
         verify{
             requestCallback.requestSuccess(resultList)
@@ -84,10 +84,10 @@ class SearchRepositoryImplTest {
 
         val userResponse = UsersResponse(userList)
 
-        every { githubSearchApi.getUserList("asd") } returns Observable.just(userResponse)
-        every { githubSearchApi.getRepoList("asd") } returns (Observable.error(exception))
+        every { githubSearchApi.getUserList(requestQuery) } returns Observable.just(userResponse)
+        every { githubSearchApi.getRepoList(requestQuery) } returns (Observable.error(exception))
 
-        searchRepository.fetchDataWith("asd")
+        searchRepository.fetchDataWith(requestQuery)
 
         verify{
             requestCallback.requestError(message)
@@ -101,10 +101,10 @@ class SearchRepositoryImplTest {
 
         val userResponse = UsersResponse(userList)
 
-        every { githubSearchApi.getUserList("asd") } returns Observable.just(userResponse)
-        every { githubSearchApi.getRepoList("asd") } returns (Observable.error(exception))
+        every { githubSearchApi.getUserList(requestQuery) } returns Observable.just(userResponse)
+        every { githubSearchApi.getRepoList(requestQuery) } returns (Observable.error(exception))
 
-        searchRepository.fetchDataWith("asd")
+        searchRepository.fetchDataWith(requestQuery)
 
         verify{
             requestCallback.requestError(ErrorParser.error403Message)
