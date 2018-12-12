@@ -18,7 +18,7 @@ class DetailsRepositoryImpl(
 ) : DetailsContract.Repository {
 
     @VisibleForTesting
-    var requestDisposable: Disposable? = null
+    var currentRequestDisposable: Disposable? = null
 
     private lateinit var requestCallback: RequestCallback<User>
 
@@ -27,7 +27,7 @@ class DetailsRepositoryImpl(
     }
 
     override fun fetchUserDetails(query: String) {
-        requestDisposable = githubUserDetailsApi.getUserDetails(query)
+        currentRequestDisposable = githubUserDetailsApi.getUserDetails(query)
             .subscribeOn(schedulerProvider.io())
             .observeOn(schedulerProvider.ui())
             .subscribe({
@@ -38,6 +38,6 @@ class DetailsRepositoryImpl(
     }
 
     override fun viewDestroyed() {
-        requestDisposable?.dispose()
+        currentRequestDisposable?.dispose()
     }
 }
