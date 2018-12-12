@@ -64,7 +64,17 @@ dependencies {
 
     implementation 'de.hdodenhof:circleimageview:2.2.0'
 
-    testImplementation 'junit:junit:4.12'
+    // (Required) Writing and executing Unit Tests on the JUnit Platform
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.3.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.3.1")
+
+    // (Optional) If you need "Parameterized Tests"
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.3.1")
+
+    // (Optional) If you also have JUnit 4-based tests
+    testImplementation("junit:junit:4.12")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.3.1")
+
     testImplementation "io.mockk:mockk:1.8.13"
 
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

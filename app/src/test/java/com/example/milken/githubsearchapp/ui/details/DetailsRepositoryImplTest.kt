@@ -6,6 +6,7 @@ import com.example.milken.githubsearchapp.data.models.User
 import com.example.milken.githubsearchapp.data.models.UsersResponse
 import com.example.milken.githubsearchapp.utils.ErrorParser
 import com.example.milken.githubsearchapp.utils.SchedulerProviderFake
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -13,10 +14,9 @@ import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import okhttp3.MediaType
 import okhttp3.ResponseBody
-import org.junit.Before
-import org.junit.Test
 
-import org.junit.Assert.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import retrofit2.HttpException
 import retrofit2.Response
 import java.lang.Exception
@@ -30,14 +30,16 @@ class DetailsRepositoryImplTest {
 
     private val currentDisposableMock = mockk<Disposable>(relaxed = true)
 
-    private val detailsRepository = DetailsRepositoryImpl(userDetailsApi, schedulerProvider, errorParser)
+    private val detailsRepository = DetailsRepositoryImpl(userDetailsApi, schedulerProvider, errorParser).apply {
+        this.setRequestCallback(requestCallback)
+    }
 
     private val user = User(id = 1, login = "Adam", avatarUrl = "avatar_url", detailsUrl = "url", followersCount = 10)
     private val query = "login"
 
-    @Before
+    @BeforeEach
     fun setUp() {
-        detailsRepository.setRequestCallback(requestCallback)
+        clearMocks(userDetailsApi, requestCallback)
     }
 
     @Test

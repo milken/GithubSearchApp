@@ -2,23 +2,25 @@ package com.example.milken.githubsearchapp.ui.details
 
 import com.example.milken.githubsearchapp.data.models.User
 import io.mockk.*
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class DetailsPresenterImplTest {
 
     private val detailsRepository = mockk<DetailsContract.Repository>(relaxed = true)
     private val view = mockk<DetailsContract.View>(relaxed = true)
 
-    private val detailsPresenter = DetailsPresenterImpl(detailsRepository)
+    private val detailsPresenter = DetailsPresenterImpl(detailsRepository).apply {
+        this.setView(view)
+    }
 
     private val nullUser = null
     private val basicUser = User(id = 1, login = "Adam", avatarUrl = "avatar_url", detailsUrl = "url")
     private val detailedUser = User(id = 1, login = "Edam", avatarUrl = "evatar_url", detailsUrl = "erl", followersCount = 10)
 
-    @Before
+    @BeforeEach
     fun setUp() {
-        detailsPresenter.setView(view)
+        clearMocks(detailsRepository, view)
         detailsPresenter.user = basicUser
     }
 

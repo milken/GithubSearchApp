@@ -4,6 +4,7 @@ import com.example.milken.githubsearchapp.data.models.BaseItem
 import com.example.milken.githubsearchapp.data.models.User
 import com.example.milken.githubsearchapp.utils.RxUtil
 import com.example.milken.githubsearchapp.utils.SchedulerProviderFake
+import io.mockk.clearMocks
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.stub.MockKStub
 import io.mockk.mockk
@@ -14,11 +15,14 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.schedulers.TestScheduler
 import io.reactivex.subjects.PublishSubject
+import net.bytebuddy.implementation.bind.annotation.RuntimeType
 import net.bytebuddy.matcher.ElementMatchers.any
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import java.util.concurrent.TimeUnit
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SearchPresenterImplTest {
 
     private val testScheduler = Schedulers.trampoline()
@@ -28,15 +32,19 @@ class SearchPresenterImplTest {
     private val compositeDisposable = mockk<CompositeDisposable>(relaxed = true)
     private val view = mockk<SearchContract.View>(relaxed = true)
 
-    private val searchPresenter: SearchContract.Presenter =
-        SearchPresenterImpl(searchRepository, rxUtil, compositeDisposable)
-
     private val textObservable = PublishSubject.create<CharSequence>()
 
-    @Before
+    private val searchPresenter: SearchContract.Presenter =
+        SearchPresenterImpl(searchRepository, rxUtil, compositeDisposable).apply {
+            this.setView(view)
+            this.setTextChangeObservable(textObservable)
+            textObservable.onNext("") //mock first emit after setting up textWatcher
+        }
+
+
+    @BeforeEach
     fun setUp() {
-        searchPresenter.setView(view)
-        searchPresenter.setTextChangeObservable(textObservable)
+        clearMocks(searchRepository, compositeDisposable, view)
     }
 
     @Test

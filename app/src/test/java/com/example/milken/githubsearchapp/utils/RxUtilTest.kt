@@ -2,8 +2,8 @@ package com.example.milken.githubsearchapp.utils
 
 import io.reactivex.schedulers.TestScheduler
 import io.reactivex.subjects.PublishSubject
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.util.concurrent.TimeUnit
 
 class RxUtilTest {
@@ -13,7 +13,6 @@ class RxUtilTest {
     private val rxUtil = RxUtil(testScheduler)
 
     private val subject = PublishSubject.create<CharSequence>()
-    private val testObserver = rxUtil.searchObservableFrom(subject).test()
 
     private val debounceTime = RxUtil.DEBOUNCE_TIME
     private val lessThanDebounceTime = (0.5 * RxUtil.DEBOUNCE_TIME).toLong()
@@ -22,9 +21,7 @@ class RxUtilTest {
     private val firstValue = "a"
     private val secondValue = "abc"
 
-    @Before
-    fun setUp(){
-        // mock skipping first item
+    private val testObserver = rxUtil.searchObservableFrom(subject).test().apply {
         subject.onNext(emptyValue)
         testScheduler.advanceTimeBy(debounceTime, TimeUnit.MILLISECONDS)
     }

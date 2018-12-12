@@ -5,18 +5,14 @@ import com.example.milken.githubsearchapp.data.common.RequestCallback
 import com.example.milken.githubsearchapp.data.models.*
 import com.example.milken.githubsearchapp.utils.ErrorParser
 import com.example.milken.githubsearchapp.utils.SchedulerProviderFake
-import io.mockk.mockk
-import io.mockk.every
-import io.mockk.verify
-import io.mockk.verifyOrder
+import io.mockk.*
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import okhttp3.MediaType
 import okhttp3.ResponseBody
-import org.junit.Test
-
-import org.junit.Before
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import retrofit2.HttpException
 import retrofit2.Response
 import java.lang.Exception
@@ -28,8 +24,11 @@ class SearchRepositoryImplTest {
     private val githubSearchApi = mockk<GithubSearchApi>(relaxed = true)
     private val schedulerProvider = SchedulerProviderFake()
     private val errorParser = ErrorParser()
+    private val currentDisposableMock = mockk<Disposable>(relaxed = true)
 
-    private val searchRepository = SearchRepositoryImpl(githubSearchApi, schedulerProvider, errorParser)
+    private val searchRepository = SearchRepositoryImpl(githubSearchApi, schedulerProvider, errorParser).apply {
+        this.setRequestCallback(requestCallback)
+    }
 
     private val userId1 = User(id = 1, login = "Adam", avatarUrl = "avatar_url", detailsUrl = "url")
     private val userId10 = User(id = 10, login = "Alicja", avatarUrl = "avatar_url", detailsUrl = "url")
@@ -39,11 +38,10 @@ class SearchRepositoryImplTest {
 
     private val requestQuery = "asd"
 
-    private val currentDisposableMock = mockk<Disposable>(relaxed = true)
 
-    @Before
+    @BeforeEach
     fun setUp(){
-        searchRepository.setRequestCallback(requestCallback)
+        clearMocks(currentDisposableMock, githubSearchApi, requestCallback)
     }
 
     @Test
@@ -61,7 +59,7 @@ class SearchRepositoryImplTest {
         val userList = listOf(userId1, userId10)
         val repoList = listOf(repoId2, repoId3)
 
-        val resultList = listOf<BaseItem>(userId1, repoId2, repoId3, userId10)
+        val resultList = listOf(userId1, repoId2, repoId3, userId10)
 
         val userResponse = UsersResponse(userList)
         val reposResponse = ReposResponse(repoList)
