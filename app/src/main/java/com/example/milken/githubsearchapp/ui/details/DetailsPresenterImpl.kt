@@ -1,5 +1,6 @@
 package com.example.milken.githubsearchapp.ui.details
 
+import android.support.annotation.VisibleForTesting
 import com.example.milken.githubsearchapp.data.models.User
 
 class DetailsPresenterImpl(
@@ -8,7 +9,8 @@ class DetailsPresenterImpl(
     DetailsContract.Presenter {
 
     private lateinit var view: DetailsContract.View
-    private lateinit var user: User
+    @VisibleForTesting
+    lateinit var user: User
 
     override fun setView(view: DetailsContract.View) {
         this.view = view
