@@ -14,7 +14,7 @@ data class User(
     @field:Json(name = "avatar_url") val avatarUrl: String,
     @field:Json(name = "url") val detailsUrl: String,
     @field:Json(name = "followers") val followersCount: Int? = null
-) : BaseItem(), Parcelable {
+) : BaseItem, Parcelable {
 
 
     val hasDetails: Boolean

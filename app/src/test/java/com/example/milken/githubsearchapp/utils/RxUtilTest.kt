@@ -22,6 +22,13 @@ class RxUtilTest {
     private val firstValue = "a"
     private val secondValue = "abc"
 
+    @Before
+    fun setUp(){
+        // mock skipping first item
+        subject.onNext(emptyValue)
+        testScheduler.advanceTimeBy(debounceTime, TimeUnit.MILLISECONDS)
+    }
+
     @Test
     fun searchObservableFrom_singleValue(){
         subject.onNext(firstValue)

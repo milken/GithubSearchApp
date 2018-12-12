@@ -2,6 +2,7 @@ package com.example.milken.githubsearchapp.ui.search
 
 import android.util.Log
 import com.example.milken.githubsearchapp.data.models.BaseItem
+import com.example.milken.githubsearchapp.data.models.SearchDataParcel
 import com.example.milken.githubsearchapp.data.models.User
 import com.example.milken.githubsearchapp.utils.RxUtil
 import io.reactivex.Observable
@@ -14,16 +15,26 @@ class SearchPresenterImpl(
     private val rxUtil: RxUtil,
     private val compositeDisposable: CompositeDisposable
 ) : SearchContract.Presenter {
+
     private lateinit var view: SearchContract.View
+    private var data: List<BaseItem> = emptyList()
 
     override fun setView(view: SearchContract.View) {
         this.view = view
+    }
+
+    override fun dataRestored(searchDataParcel: SearchDataParcel) {
+        data = searchDataParcel.itemList
     }
 
     override fun viewSetUp() {
         searchRepository.setRequestCallback(this)
         view.initSearchList()
         view.initTextWatcher()
+
+        if(data.isNotEmpty()) {
+            view.updateSearchList(data)
+        }
     }
 
     override fun userClicked(baseItem: BaseItem) {
@@ -50,13 +61,18 @@ class SearchPresenterImpl(
     }
 
     override fun requestSuccess(requestResult: List<BaseItem>) {
+        data = requestResult
         view.hideProgressBar()
-        view.updateSearchList(requestResult)
+        view.updateSearchList(data)
     }
 
     override fun requestError(message: String) {
         view.hideProgressBar()
         view.showError(message)
+    }
+
+    override fun getDataParcel(): SearchDataParcel {
+        return SearchDataParcel(data)
     }
 
 

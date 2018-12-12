@@ -2,6 +2,7 @@ package com.example.milken.githubsearchapp.ui.search
 
 import com.example.milken.githubsearchapp.data.common.RequestCallback
 import com.example.milken.githubsearchapp.data.models.BaseItem
+import com.example.milken.githubsearchapp.data.models.SearchDataParcel
 import com.example.milken.githubsearchapp.data.models.User
 import io.reactivex.Observable
 
@@ -15,6 +16,9 @@ interface SearchContract {
 
         fun viewSetUp()
         fun viewDestroyed()
+
+        fun getDataParcel(): SearchDataParcel
+        fun dataRestored(searchDataParcel: SearchDataParcel)
     }
 
     interface View {

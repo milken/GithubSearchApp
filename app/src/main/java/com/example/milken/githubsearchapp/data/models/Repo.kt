@@ -11,4 +11,4 @@ data class Repo(
     override val dataType: DataType = DataType.REPO,
     val name: String,
     val description: String?
-) : BaseItem(), Parcelable
+) : BaseItem, Parcelable

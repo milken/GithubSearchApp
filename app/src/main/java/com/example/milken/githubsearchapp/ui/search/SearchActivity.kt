@@ -8,6 +8,7 @@ import android.widget.Toast
 import com.example.milken.githubsearchapp.ui.MyApp
 import com.example.milken.githubsearchapp.R
 import com.example.milken.githubsearchapp.data.models.BaseItem
+import com.example.milken.githubsearchapp.data.models.SearchDataParcel
 import com.example.milken.githubsearchapp.data.models.User
 import com.example.milken.githubsearchapp.di.SearchModule
 import com.example.milken.githubsearchapp.ui.details.DetailsActivity
@@ -27,8 +28,19 @@ class SearchActivity : AppCompatActivity(), SearchContract.View {
         setContentView(R.layout.main_activity)
         initDagger()
 
+        savedInstanceState?.let {
+            it.getParcelable<SearchDataParcel>(DATA_KEY)?.let {
+                it -> presenter.dataRestored(it)
+            }
+        }
+
         presenter.setView(this)
         presenter.viewSetUp()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        outState?.putParcelable(DATA_KEY, presenter.getDataParcel())
     }
 
 
@@ -81,5 +93,9 @@ class SearchActivity : AppCompatActivity(), SearchContract.View {
         runOnUiThread {
             progressBar.visibility = View.GONE
         }
+    }
+
+    companion object {
+        const val DATA_KEY = "SEARCH_LIST"
     }
 }

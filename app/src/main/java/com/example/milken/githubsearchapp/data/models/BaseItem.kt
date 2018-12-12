@@ -1,6 +1,8 @@
 package com.example.milken.githubsearchapp.data.models
 
-abstract class BaseItem {
-    abstract val id: Long
-    abstract val dataType: DataType
+import android.os.Parcelable
+
+interface BaseItem : Parcelable {
+    val id: Long
+    val dataType: DataType
 }
