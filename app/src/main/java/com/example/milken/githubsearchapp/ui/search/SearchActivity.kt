@@ -73,6 +73,9 @@ class SearchActivity : AppCompatActivity(), SearchContract.View {
 
     override fun updateSearchList(items: List<BaseItem>) {
         adapter.setData(items)
+        if(items.isNotEmpty()){
+            recyclerView.scrollToPosition(0)
+        }
     }
 
     override fun startDetailsActivity(user: User) {
