@@ -1,5 +1,6 @@
 package com.example.milken.githubsearchapp.ui.search
 
+import com.example.milken.githubsearchapp.data.models.BaseItem
 import com.example.milken.githubsearchapp.data.models.User
 import com.example.milken.githubsearchapp.utils.RxUtil
 import com.example.milken.githubsearchapp.utils.SchedulerProviderFake
@@ -20,28 +21,29 @@ import java.util.concurrent.TimeUnit
 
 class SearchPresenterImplTest {
 
-    private val testScheduler = TestScheduler()
+    private val testScheduler = Schedulers.trampoline()
     private val rxUtil = RxUtil(testScheduler)
 
-
     private val searchRepository = mockk<SearchContract.Repository>(relaxed = true)
-    private val compositeDisposable = CompositeDisposable()
+    private val compositeDisposable = mockk<CompositeDisposable>(relaxed = true)
     private val view = mockk<SearchContract.View>(relaxed = true)
 
-    private val searchPresenter = SearchPresenterImpl(searchRepository, rxUtil, compositeDisposable)
+    private val searchPresenter: SearchContract.Presenter =
+        SearchPresenterImpl(searchRepository, rxUtil, compositeDisposable)
 
     private val textObservable = PublishSubject.create<CharSequence>()
 
     @Before
     fun setUp() {
         searchPresenter.setView(view)
+        searchPresenter.setTextChangeObservable(textObservable)
     }
 
     @Test
-    fun viewSetUp_assertInitSearchListAndInitTextWatcherWithView() {
+    fun viewSetUp_assertInitSearchListWithView_initTextWatcherWithView_repositorySetCallback() {
         searchPresenter.viewSetUp()
 
-        verify {
+        verifyAll {
             searchRepository.setRequestCallback(searchPresenter)
             view.initSearchList()
             view.initTextWatcher()
@@ -59,26 +61,53 @@ class SearchPresenterImplTest {
     }
 
     @Test
-    fun setTextChangeObservable() {
+    fun setTextChangeObservable_disposableIsAddedToCompositeDisposable() {
         searchPresenter.setTextChangeObservable(textObservable)
 
-        val sth = rxUtil.searchObservableFrom(textObservable).subscribe()
-        textObservable.onNext("abc")
-        testScheduler.advanceTimeBy(RxUtil.DEBOUNCE_TIME, TimeUnit.MILLISECONDS)
-
         verifyAll {
-            compositeDisposable.add(sth)
-            searchRepository.fetchDataWith("abc")
+            compositeDisposable.add(any())
         }
-////        searchPresenter.setTextChangeObservable(subject)
     }
 
     @Test
-    fun viewDestroyed() {
+    fun textObservableOnNext_showProgressBarWithView_searchRepositoryFetchDataWithCorrectText() {
+        val text = "asd"
+        textObservable.onNext(text)
+
+        verifyAll {
+            view.showProgressBar()
+            searchRepository.fetchDataWith(text)
+        }
+    }
+
+    @Test
+    fun viewDestroyed_compositeDisposableDispose() {
         searchPresenter.viewDestroyed()
 
         verify {
             compositeDisposable.dispose()
+        }
+    }
+
+    @Test
+    fun requestSuccess_viewHideProgressBar_viewUpdateSearchList(){
+        val list = listOf<BaseItem>()
+        searchPresenter.requestSuccess(list)
+
+        verifyAll {
+            view.hideProgressBar()
+            view.updateSearchList(list)
+        }
+    }
+
+    @Test
+    fun requestFailure_viewHideProgressBar_viewShowError(){
+        val message = "error"
+        searchPresenter.requestError(message)
+
+        verifyAll {
+            view.hideProgressBar()
+            view.showError(message)
         }
     }
 }
