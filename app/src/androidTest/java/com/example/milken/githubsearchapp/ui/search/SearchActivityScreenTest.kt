@@ -27,6 +27,7 @@ import android.support.test.espresso.matcher.ViewMatchers.isRoot
 import android.support.test.espresso.ViewAction
 import android.view.View
 import com.example.milken.githubsearchapp.di.*
+import com.example.milken.githubsearchapp.ui.search.RecyclerViewMatcher.Companion.withRecyclerView
 import it.cosenonjaviste.daggermock.DaggerMock
 import org.mockito.Mock
 import org.mockito.Mockito
@@ -58,7 +59,7 @@ class SearchActivityScreenTest {
     private val repoId3 = Repo(id = 3, name = "Testable", description = null)
 
     @Test
-    fun someTest() {
+    fun testGetSearches_showsListInCorrectOrder() {
         val userList = listOf(userId1, userId10)
         val repoList = listOf(repoId2, repoId3)
 
@@ -74,7 +75,30 @@ class SearchActivityScreenTest {
 
         onView(withId(R.id.searchEditText)).perform(click()).perform(typeText("a")).perform(typeText("a"))
 
-        onView(withText("Adam")).check(matches(isDisplayed()))
+        for((index, value) in resultList.iterator().withIndex()) {
+            onView(withRecyclerView(R.id.recyclerView).atPosition(index))
+                .check(matches(hasDescendant(withText(value.id.toString()))))
+        }
     }
+
+    @Test
+    fun testClickUser_showsDetailsActivity() {
+        val userList = listOf(userId1)
+
+        val userResponse = UsersResponse(userList)
+        val reposResponse = ReposResponse(emptyList())
+
+        Mockito.`when`(githubSearchApi.getUserList("a")).thenReturn(Observable.just(userResponse))
+        Mockito.`when`(githubSearchApi.getRepoList("a")).thenReturn(Observable.just(reposResponse))
+
+        main.launchActivity(null)
+
+        onView(withId(R.id.searchEditText)).perform(click()).perform(typeText("a")).perform(typeText("a"))
+
+        onView(withRecyclerView(R.id.recyclerView).atPosition(0)).perform(click())
+
+        onView(withText(userId1.login)).check(matches(isDisplayed()))
+    }
+
 }
 
