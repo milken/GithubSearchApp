@@ -12,6 +12,7 @@ import dagger.Provides
 import io.reactivex.disposables.CompositeDisposable
 import retrofit2.Retrofit
 
+@DebugOpenClass
 @Module
 class SearchModule {
 
