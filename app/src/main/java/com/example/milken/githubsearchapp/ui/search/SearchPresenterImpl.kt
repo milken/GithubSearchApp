@@ -1,13 +1,17 @@
 package com.example.milken.githubsearchapp.ui.search
 
+import android.annotation.SuppressLint
 import android.support.annotation.VisibleForTesting
 import android.util.Log
+import com.example.milken.githubsearchapp.data.apis.GithubSearchApi
 import com.example.milken.githubsearchapp.data.models.BaseItem
 import com.example.milken.githubsearchapp.data.models.SearchDataParcel
 import com.example.milken.githubsearchapp.data.models.User
 import com.example.milken.githubsearchapp.utils.RxUtil
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.subjects.PublishSubject
 
 
 class SearchPresenterImpl(
@@ -19,25 +23,21 @@ class SearchPresenterImpl(
 
     private lateinit var view: SearchContract.View
 
-    @VisibleForTesting
-    var data: List<BaseItem> = emptyList()
-
     override fun setView(view: SearchContract.View) {
         this.view = view
     }
 
     override fun dataRestored(searchDataParcel: SearchDataParcel) {
-        data = searchDataParcel.itemList
+//        resultList = searchDataParcel.itemList
     }
 
     override fun viewSetUp() {
-        searchRepository.setRequestCallback(this)
         view.initSearchList()
         view.initTextWatcher()
 
-        if(data.isNotEmpty()) {
-            view.updateSearchList(data)
-        }
+//        if(data.isNotEmpty()) {
+//            view.updateSearchList(data)
+//        }
     }
 
     override fun userClicked(baseItem: BaseItem) {
@@ -54,7 +54,7 @@ class SearchPresenterImpl(
     }
 
     private fun processNewText(text: String) {
-        view.showProgressBar()
+//        view.showProgressBar()
         searchRepository.fetchDataWith(text)
     }
 
@@ -63,21 +63,19 @@ class SearchPresenterImpl(
         compositeDisposable.dispose()
     }
 
-    override fun requestSuccess(requestResult: List<BaseItem>) {
-        data = requestResult
-        view.hideProgressBar()
-        view.updateSearchList(data)
+    override fun getDataParcel(): SearchDataParcel? {
+        return null
     }
 
-    override fun requestError(message: String) {
-        view.hideProgressBar()
-        view.showError(message)
+    override val resultList: Observable<ViewState<List<BaseItem>>> by lazy {
+        val data = Observable.create<ViewState<List<BaseItem>>>
+        { emitter ->
+            searchRepository
+                .responseSubject
+                .subscribe {
+                    emitter.onNext(it)
+                }
+        }
+        data
     }
-
-    override fun getDataParcel(): SearchDataParcel {
-        return SearchDataParcel(data)
-    }
-
-
-
 }

@@ -12,6 +12,7 @@ import com.example.milken.githubsearchapp.utils.SchedulerProvider
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
+import io.reactivex.subjects.PublishSubject
 
 class SearchRepositoryImpl(
     private val githubSearchApi: GithubSearchApi,
@@ -19,22 +20,20 @@ class SearchRepositoryImpl(
     private val errorParser: ErrorParser
 ) : SearchContract.Repository {
 
-    private lateinit var requestCallback: RequestCallback<List<BaseItem>>
-
     @VisibleForTesting
     var currentRequestDisposable: Disposable? = null
 
-    override fun setRequestCallback(requestCallback: RequestCallback<List<BaseItem>>) {
-       this.requestCallback = requestCallback
-    }
+    override val responseSubject: PublishSubject<ViewState<List<BaseItem>>> = PublishSubject.create()
 
     override fun fetchDataWith(query: String) {
+        Log.d("SearchRepositoryImpl", "fetchDataWith: $query")
         currentRequestDisposable?.dispose()
 
         currentRequestDisposable = createRequest(query)
     }
 
     private fun createRequest(query: String): Disposable {
+        responseSubject.onNext(ViewState.loading(true))
         return Observable
             .zip(
                 getUserListRequest(query),
@@ -51,8 +50,14 @@ class SearchRepositoryImpl(
             .toList()
             .observeOn(schedulerProvider.ui())
             .subscribe(
-                { result -> requestCallback.requestSuccess(result) },
-                { err -> requestCallback.requestError(errorParser.getMessage(err)) })
+                { result ->
+                    responseSubject.onNext(ViewState.success(result))
+                    responseSubject.onNext(ViewState.loading(false))
+                },
+                { err ->
+                    responseSubject.onNext(ViewState.failure(errorParser.getMessage(err)))
+                    responseSubject.onNext(ViewState.loading(false))
+                })
     }
 
     override fun viewDestroyed() {

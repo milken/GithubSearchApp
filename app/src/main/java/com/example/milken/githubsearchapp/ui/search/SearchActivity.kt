@@ -3,6 +3,7 @@ package com.example.milken.githubsearchapp.ui.search
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.example.milken.githubsearchapp.ui.MyApp
@@ -13,6 +14,7 @@ import com.example.milken.githubsearchapp.data.models.User
 import com.example.milken.githubsearchapp.di.SearchModule
 import com.example.milken.githubsearchapp.ui.details.DetailsActivity
 import com.jakewharton.rxbinding2.widget.RxTextView
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.main_activity.*
 import javax.inject.Inject
 
@@ -69,6 +71,17 @@ class SearchActivity : AppCompatActivity(), SearchContract.View {
                 resources.getDimension(R.dimen.item_default_margin).toInt()
             )
         )
+
+        presenter.resultList
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+
+                when (it) {
+                    is ViewState.Success -> adapter.setData(it.data)
+                    is ViewState.Progress -> progressBar.visibility = if(it.loading) View.VISIBLE else View.INVISIBLE
+                    is ViewState.Failure -> showError(it.e)
+                }
+        }
     }
 
     override fun updateSearchList(items: List<BaseItem>) {
